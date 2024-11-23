@@ -14,6 +14,7 @@ export interface IData {
 export interface IBus {
   id:              number;
   numeroBus:       string;
+  fechaCreacion: string;
   placa:           string;
   caracteristicas: string;
   marca:           IMarca;
