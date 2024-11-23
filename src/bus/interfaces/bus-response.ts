@@ -1,6 +1,11 @@
-export interface IBusResponse {
+export interface IBusesResponse {
   status: string;
   data:   IData;
+}
+
+export interface IBusResponse {
+  status: string;
+  data:   IBus;
 }
 
 export interface IData {
@@ -14,7 +19,7 @@ export interface IData {
 export interface IBus {
   id:              number;
   numeroBus:       string;
-  fechaCreacion: string;
+  fechaCreacion:   string;
   placa:           string;
   caracteristicas: string;
   marca:           IMarca;

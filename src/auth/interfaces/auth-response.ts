@@ -1,4 +1,9 @@
 export interface IAuthResponse {
+  status: string;
+  data:   IData;
+}
+
+export interface IData {
   usuario:     IUsuario;
   accessToken: string;
 }

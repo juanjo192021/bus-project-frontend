@@ -1,20 +1,33 @@
 import { useEffect, useState } from "react";
-import { IBus, IData } from "../interfaces/bus-response";
-import { BusService } from "../services/BusService";
+import { IBus, IBusesResponse, IData } from "../interfaces/bus-response";
+import { getBusesByPageAndSize } from "../services/BusService";
+import { BusModal } from "../components/BusModal";
 
 const BusPage = () => {
   const [buses, setBuses] = useState<IBus[]>([]);
   const [pagination, setPagination] = useState<IData | null>(null);
   const [error, setError] = useState<string | null>(null);
   const [currentPage, setCurrentPage] = useState<number>(0);
+  const [showModal, setShowModal] = useState(false);
+  const [selectedBusId, setSelectedBusId] = useState<number | null>(null);
+
+  const handleOpenModal = (id: number) => {
+    setSelectedBusId(id);
+    setShowModal(true);
+  };
 
   useEffect(() => {
     const getBuses = async () => {
       try {
-        const data = await BusService(currentPage);
-        if (data) {
-          setBuses(data.content);
-          setPagination(data);
+        const data = await getBusesByPageAndSize(currentPage);
+        if(!data) {
+          setError('Error al obtener los datos de los buses.');
+          return;
+        }
+        if (data.status === 'SUCCESS') {
+          const dataResponse = data as IBusesResponse;
+          setBuses(dataResponse.data.content);
+          setPagination(dataResponse.data);
         } else {
           setError("No se encontraron datos de buses");
         }
@@ -142,7 +155,10 @@ const BusPage = () => {
                       <p className="text-sm text-slate-500">{bus.estado}</p>
                     </td>
                     <td className="p-4 py-5">
-                      <button className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded-full">
+                      <button
+                        onClick={() => handleOpenModal(bus.id)}
+                        className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded-full"
+                      >
                         Ver info
                       </button>
                     </td>
@@ -151,6 +167,13 @@ const BusPage = () => {
               )}
             </tbody>
           </table>
+
+          {/* Bus Modal */}
+          <BusModal
+            isOpen={showModal}
+            onClose={() => setShowModal(false)}
+            id={selectedBusId}
+          />
 
           <div className="flex justify-between items-center px-4 py-3">
             <div className="text-sm text-slate-500">
